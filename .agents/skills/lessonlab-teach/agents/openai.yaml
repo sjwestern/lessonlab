@@ -1,0 +1,5 @@
+interface:
+  display_name: "LessonLab Teach"
+  short_description: "Learn a concept in a LessonLab workspace"
+policy:
+  allow_implicit_invocation: false
