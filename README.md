@@ -25,6 +25,48 @@ lessonlab/
   tests/                  # pytest suite
 ```
 
+## Install for reuse across repositories
+
+### Option 1 - install from git (regular use)
+
+Install once, then use `lessonlab` from any repo:
+
+```bash
+uv tool install git+https://github.com/sjwestern/lessonlab.git
+```
+
+Use from a course repo:
+
+```bash
+cd /path/to/course
+lessonlab serve --content-root .
+```
+
+Upgrade later:
+
+```bash
+uv tool upgrade lessonlab
+```
+
+### Option 2 - clone + editable tool install (active development)
+
+Clone locally and install as an editable tool:
+
+```bash
+git clone https://github.com/sjwestern/lessonlab.git ~/projects/sjwestern/lessonlab
+uv tool install --editable ~/projects/sjwestern/lessonlab
+```
+
+Use from a course repo:
+
+```bash
+cd /path/to/course
+lessonlab serve --content-root .
+```
+
+Editable install means local code changes in `~/projects/sjwestern/lessonlab` are picked up
+without reinstalling.
+
 ## Use from a course repository
 
 The course repository provides the **content root**: `lessons/`, `reference/`,
@@ -57,7 +99,7 @@ uv run pytest
 From the course repo root:
 
 ```bash
-uv run --project lessonlab lessonlab serve --content-root /path/to/course
+lessonlab serve --content-root /path/to/course
 ```
 
 ## Scaffold a lesson
@@ -65,13 +107,13 @@ uv run --project lessonlab lessonlab serve --content-root /path/to/course
 Create a concept lesson with the next numeric id:
 
 ```bash
-uv run --project lessonlab lessonlab scaffold lesson --slug intro-state-machines
+lessonlab scaffold lesson --slug intro-state-machines
 ```
 
 Create a build lesson with custom title and response ids:
 
 ```bash
-uv run --project lessonlab lessonlab scaffold lesson \
+lessonlab scaffold lesson \
   --slug ship-artifacts \
   --mode build \
   --title "Ship artifacts" \
@@ -85,5 +127,5 @@ This writes `lessons/NNNN-slug.(concept|build).html` under the content root
 ## Validate answer files
 
 ```bash
-uv run --project lessonlab lessonlab validate --content-root /path/to/course
+lessonlab validate --content-root /path/to/course
 ```
