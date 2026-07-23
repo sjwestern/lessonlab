@@ -1,0 +1,21 @@
+# Session memory - scaffold lesson command
+
+- Added top-level `lessonlab` CLI entrypoint with:
+  - `lessonlab scaffold lesson ...`
+  - `lessonlab serve -- ...` passthrough to `lesson-server`
+  - `lessonlab validate -- ...` passthrough to `lessonlab-validate`
+- Kept existing `lesson-server` and `lessonlab-validate` scripts unchanged.
+- Added `src/lessonlab/scaffold.py` for:
+  - ID resolution (`--id` or next id)
+  - template writing for concept/build mode
+  - new template knobs: `--title`, repeated `--response-id`
+  - validation for slug and response ids
+- Expanded tests in `tests/test_scaffold.py` for:
+  - concept scaffold
+  - build artifact field scaffold
+  - exists-without-force failure
+  - force overwrite
+  - custom title + response ids
+  - invalid response id
+  - serve/validate passthrough delegation
+- Updated README for new top-level CLI commands and scaffold options.

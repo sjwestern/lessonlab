@@ -17,7 +17,9 @@ lessonlab/
     state.py              # atomic JSON read/write for progress + answer files
     service.py            # use-case layer: get_progress, save_draft, submit
     http_app.py           # HTTP handler + route table
-    cli.py                # argparse + server bootstrap
+    cli.py                # lesson-server argparse + server bootstrap
+    lessonlab_cli.py      # top-level lessonlab CLI (scaffold commands)
+    scaffold.py           # lesson file scaffold helpers + template
   assets/                 # framework CSS/JS served at /_framework/assets/*
   schemas/                # JSON Schema (draft 2020-12) for answer files
   tests/                  # pytest suite
@@ -55,11 +57,40 @@ uv run pytest
 From the course repo root:
 
 ```bash
-uv run --project lessonlab lesson-server
+uv run --project lessonlab lessonlab serve -- --content-root /path/to/course
 ```
 
-Or, if the parent repo keeps a `./lesson-server` shim script, just:
+Back-compat scripts still work:
 
 ```bash
-./lesson-server
+uv run --project lessonlab lesson-server --content-root /path/to/course
+uv run --project lessonlab lessonlab-validate --content-root /path/to/course
+```
+
+## Scaffold a lesson
+
+Create a concept lesson with the next numeric id:
+
+```bash
+uv run --project lessonlab lessonlab scaffold lesson --slug intro-state-machines
+```
+
+Create a build lesson with custom title and response ids:
+
+```bash
+uv run --project lessonlab lessonlab scaffold lesson \
+  --slug ship-artifacts \
+  --mode build \
+  --title "Ship artifacts" \
+  --response-id design-notes \
+  --response-id review-summary
+```
+
+This writes `lessons/NNNN-slug.(concept|build).html` under the content root
+(default: current directory).
+
+## Validate answer files
+
+```bash
+uv run --project lessonlab lessonlab validate -- --content-root /path/to/course
 ```
