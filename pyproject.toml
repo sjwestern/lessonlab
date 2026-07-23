@@ -10,9 +10,7 @@ authors = [{ name = "sjwestern" }]
 dependencies = []
 
 [project.scripts]
-lessonlab = "lessonlab.lessonlab_cli:main"
-lesson-server = "lessonlab.cli:main"
-lessonlab-validate = "lessonlab.validation:main"
+lessonlab = "lessonlab.cli:main"
 
 [build-system]
 requires = ["hatchling"]

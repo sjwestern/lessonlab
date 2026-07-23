@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from lessonlab import lessonlab_cli
+from lessonlab import cli
 
 
 def test_scaffold_creates_next_concept_lesson(tmp_path: Path) -> None:
@@ -10,7 +10,7 @@ def test_scaffold_creates_next_concept_lesson(tmp_path: Path) -> None:
     lessons_dir.mkdir()
     (lessons_dir / "0002-already-here.concept.html").write_text("x", encoding="utf-8")
 
-    exit_code = lessonlab_cli.main(
+    exit_code = cli.main(
         [
             "scaffold",
             "lesson",
@@ -35,7 +35,7 @@ def test_scaffold_fails_if_target_exists_without_force(tmp_path: Path) -> None:
     existing = lessons_dir / "0001-topic.concept.html"
     existing.write_text("old", encoding="utf-8")
 
-    exit_code = lessonlab_cli.main(
+    exit_code = cli.main(
         [
             "scaffold",
             "lesson",
@@ -53,7 +53,7 @@ def test_scaffold_fails_if_target_exists_without_force(tmp_path: Path) -> None:
 
 
 def test_scaffold_creates_build_lesson_with_artifact_fields(tmp_path: Path) -> None:
-    exit_code = lessonlab_cli.main(
+    exit_code = cli.main(
         [
             "scaffold",
             "lesson",
@@ -82,7 +82,7 @@ def test_scaffold_force_overwrites_existing_file(tmp_path: Path) -> None:
     existing = lessons_dir / "0001-topic.concept.html"
     existing.write_text("old", encoding="utf-8")
 
-    exit_code = lessonlab_cli.main(
+    exit_code = cli.main(
         [
             "scaffold",
             "lesson",
@@ -101,7 +101,7 @@ def test_scaffold_force_overwrites_existing_file(tmp_path: Path) -> None:
 
 
 def test_scaffold_uses_custom_title_and_response_ids(tmp_path: Path) -> None:
-    exit_code = lessonlab_cli.main(
+    exit_code = cli.main(
         [
             "scaffold",
             "lesson",
@@ -127,7 +127,7 @@ def test_scaffold_uses_custom_title_and_response_ids(tmp_path: Path) -> None:
 
 
 def test_scaffold_rejects_invalid_response_id(tmp_path: Path) -> None:
-    exit_code = lessonlab_cli.main(
+    exit_code = cli.main(
         [
             "scaffold",
             "lesson",
@@ -143,19 +143,19 @@ def test_scaffold_rejects_invalid_response_id(tmp_path: Path) -> None:
     assert exit_code == 1
 
 
-def test_lessonlab_serve_delegates_to_server_cli(monkeypatch) -> None:
-    calls: list[list[str]] = []
+def test_lessonlab_serve_dispatches_to_serve_runner(monkeypatch) -> None:
+    seen: list[tuple[str, bool]] = []
 
-    def fake_serve(argv: list[str] | None = None) -> int:
-        calls.append(argv or [])
+    def fake_run_serve(args) -> int:
+        seen.append((args.lesson, args.list))
         return 12
 
-    monkeypatch.setattr(lessonlab_cli, "serve_main", fake_serve)
+    monkeypatch.setattr(cli, "_run_serve", fake_run_serve)
 
-    exit_code = lessonlab_cli.main(["serve", "--", "--list"])
+    exit_code = cli.main(["serve", "--list", "--lesson", "0002"])
 
     assert exit_code == 12
-    assert calls == [["--list"]]
+    assert seen == [("0002", True)]
 
 
 def test_lessonlab_validate_delegates_to_validate_cli(monkeypatch) -> None:
@@ -165,9 +165,9 @@ def test_lessonlab_validate_delegates_to_validate_cli(monkeypatch) -> None:
         calls.append(argv or [])
         return 3
 
-    monkeypatch.setattr(lessonlab_cli, "validate_main", fake_validate)
+    monkeypatch.setattr(cli, "validate_main", fake_validate)
 
-    exit_code = lessonlab_cli.main(["validate", "--", "--content-root", "/tmp/course"])
+    exit_code = cli.main(["validate", "--content-root", "/tmp/course"])
 
     assert exit_code == 3
     assert calls == [["--content-root", "/tmp/course"]]

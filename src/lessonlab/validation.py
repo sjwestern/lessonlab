@@ -2,7 +2,7 @@
 
 This is the **single source of truth** for the rules encoded in
 ``schemas/answer.schema.json``. Both the HTTP write path and the offline
-``lessonlab-validate`` CLI import from here so the rules cannot drift.
+``lessonlab validate`` command import from here so the rules cannot drift.
 """
 
 from __future__ import annotations
@@ -116,7 +116,7 @@ def validate_artifacts(value: Any) -> dict[str, Any]:
     }
 
 
-# --- Offline validator (used by the ``lessonlab-validate`` console script) ---
+# --- Offline validator (used by the ``lessonlab validate`` command) ---
 
 REQUIRED_ANSWER_FILE_KEYS = {"version", "lesson", "mode", "status", "answers"}
 ALLOWED_STATUSES = ("not-started", "in-progress", "submitted")
@@ -201,7 +201,7 @@ def validate_state_dir(
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Console-script entrypoint for ``lessonlab-validate``.
+    """Validator entrypoint for ``lessonlab validate``.
 
     Discovers the content root the same way the server does (defaults to
     ``$PWD``) and validates every answer file in it.
@@ -213,7 +213,8 @@ def main(argv: list[str] | None = None) -> int:
     from .paths import Paths
 
     parser = argparse.ArgumentParser(
-        description="Validate learning-state answer files against the answer schema."
+        prog="lessonlab validate",
+        description="Validate learning-state answer files against the answer schema.",
     )
     parser.add_argument(
         "--content-root",
