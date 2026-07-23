@@ -18,7 +18,7 @@ lessonlab/
     service.py            # use-case layer: get_progress, save_draft, submit
     http_app.py           # HTTP handler + route table
     cli.py                # top-level lessonlab CLI entrypoint + dispatch
-    commands/             # command modules (serve, validate, scaffold)
+    commands/             # command modules (serve, validate, scaffold, init)
     scaffold.py           # lesson file scaffold helpers + template
   assets/                 # framework CSS/JS served at /_framework/assets/*
   schemas/                # JSON Schema (draft 2020-12) for answer files
@@ -101,6 +101,23 @@ From the course repo root:
 ```bash
 lessonlab serve --content-root /path/to/course
 ```
+
+## Initialize a new Learn repo
+
+Create the expected course layout in the current directory:
+
+```bash
+lessonlab init
+```
+
+Or target another path:
+
+```bash
+lessonlab init --content-root /path/to/course
+```
+
+This creates `lessons/`, `reference/`, `learning-state/answers/`, and
+`learning-state/progress.json`.
 
 ## Scaffold a lesson
 

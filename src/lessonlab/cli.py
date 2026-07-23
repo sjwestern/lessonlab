@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import sys
 
+from .commands.init import add_arguments as add_init_arguments
+from .commands.init import run as _run_init
 from .commands.scaffold import add_arguments as add_scaffold_arguments
 from .commands.scaffold import run as _run_scaffold
 from .commands.serve import add_arguments as add_serve_arguments
@@ -27,6 +29,9 @@ def _build_parser() -> argparse.ArgumentParser:
     scaffold_parser = subparsers.add_parser("scaffold", help="Scaffold project files")
     add_scaffold_arguments(scaffold_parser)
 
+    init_parser = subparsers.add_parser("init", help="Initialize a new Learn repo")
+    add_init_arguments(init_parser)
+
     return parser
 
 
@@ -46,6 +51,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "scaffold" and args.scaffold_command == "lesson":
         return _run_scaffold(args)
+
+    if args.command == "init":
+        return _run_init(args)
 
     parser.print_help(sys.stderr)
     return 1
