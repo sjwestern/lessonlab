@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sjwestern.github.io/lessonlab/schemas/answer.schema.json",
+  "title": "Learning-state answer file",
+  "description": "Shape of learning-state/answers/NNNN.json. The lesson server writes and validates this file. Build-mode submissions must include an artifacts object; concept-mode submissions must omit it.",
+  "type": "object",
+  "required": ["version", "lesson", "mode", "status", "answers"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "lesson": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["concept", "build"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["not-started", "in-progress", "submitted"]
+    },
+    "updatedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "submittedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "answers": {
+      "type": "object",
+      "maxProperties": 100,
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 10000
+      }
+    },
+    "artifacts": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/artifacts" }
+      ]
+    }
+  },
+  "$defs": {
+    "artifacts": {
+      "type": "object",
+      "required": ["commitRef", "testNames", "artifactPaths"],
+      "additionalProperties": false,
+      "properties": {
+        "commitRef": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{7,40}$",
+          "description": "Short or full git commit hash of the change produced for this lesson."
+        },
+        "testNames": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": "Names of tests added or exercised by this lesson. Combined with artifactPaths, at least one entry is required across the two lists."
+        },
+        "artifactPaths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$)).+$"
+          },
+          "description": "Workspace-relative paths (no leading slash, no parent traversal) to committed artifacts: ADRs, trace-matrix rows, runbook lines, release notes, or code."
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "mode": { "const": "build" }, "status": { "const": "submitted" } },
+        "required": ["mode", "status"]
+      },
+      "then": {
+        "required": ["artifacts"],
+        "properties": {
+          "artifacts": { "$ref": "#/$defs/artifacts" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "mode": { "const": "concept" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "artifacts": { "type": "null" }
+        }
+      }
+    }
+  ]
+}
